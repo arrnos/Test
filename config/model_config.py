@@ -12,7 +12,7 @@ xgb_config = {
     'num_round': 100,
     "param":
         {
-            'nthread': 6,
+            'nthread': 19,
             'eval_metric': 'auc',
             'max_depth': 6,
             'eta': 0.3,

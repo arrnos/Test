@@ -85,3 +85,6 @@ def main():
 
     print_nice_model(dump_file, feature_map_file, dump_nice_file)
     get_feature_importance(model_file, feature_map_file, feature_importance_file, importance_metric="weight")
+
+if __name__ == '__main__':
+    main()
