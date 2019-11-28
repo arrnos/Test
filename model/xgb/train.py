@@ -7,7 +7,7 @@
 @time: 2019/11/28
 """
 import xgboost as xgb
-from sklearn.metrics import roc_auc_score, precision_recall_curve, roc_curve, auc
+from sklearn.metrics import roc_auc_score, roc_curve, auc
 from config.model_config import xgb_config as config
 from util.load_dict import *
 import re
@@ -30,12 +30,9 @@ def test(test_libsvm_file, model_file, exp_result_file):
     y_pred = model.predict(dtest)
 
     fpr, tpr, _ = roc_curve(y_true, y_pred, pos_label=1)
-    auc1 = auc(fpr, tpr)
-    auc2 = roc_auc_score(y_true, y_pred)
-    auc3 = roc_auc_score(y_true, y_pred, average=None)
-    prc = precision_recall_curve(y_true, y_pred, pos_label=1)
+    auc_score = auc(fpr, tpr)
 
-    exp_result = "auc1:%.4f\tauc2:%.4f\tauc3:%.4f\tprc:%.4f" % (auc1, auc2, auc3, prc)
+    exp_result = "auc:%.4f" % auc_score
     print(exp_result)
 
     with codecs.open(exp_result_file, 'w', 'utf-8') as fout:
@@ -44,7 +41,7 @@ def test(test_libsvm_file, model_file, exp_result_file):
 
 
 def print_nice_model(model_dump_file, feature_map_file, model_dump_nice_file):
-    dict_feature_index = load_dict(feature_map_file)
+    dict_feature_index = load_dict(feature_map_file, key_first=False)
     pattern = re.compile("f[0-9]+")
     with codecs.open(model_dump_file, 'r', 'utf-8') as fin, codecs.open(model_dump_nice_file, 'w', 'utf-8') as fout:
         for line in fin:
@@ -78,13 +75,14 @@ def main():
     feature_map_file = config["feature_map_file"]
     dump_nice_file = config["dump_nice_file"]
     feature_importance_file = config["feature_importance_file"]
-    exp_result_file = config["exp_result_file"] + "_%s" % datetime.datetime.now().strftime("%Y%m%d_%H:%M:%S")
+    exp_result_file = config["exp_result_file"] + "_%s" % datetime.datetime.now().strftime("%Y%m%d_%H_%M")
 
     train(train_libsvm_file, dump_file, model_file)
     test(test_libsvm_file, model_file, exp_result_file)
 
     print_nice_model(dump_file, feature_map_file, dump_nice_file)
     get_feature_importance(model_file, feature_map_file, feature_importance_file, importance_metric="weight")
+
 
 if __name__ == '__main__':
     main()
