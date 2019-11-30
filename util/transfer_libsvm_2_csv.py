@@ -8,7 +8,7 @@
 """
 from util.load_dict import load_dict
 from config.file_path_config import *
-from config.featue_config import *
+from config.xgb_feature_config import *
 from codecs import open
 import time
 
@@ -113,10 +113,10 @@ def batch_transfer_libsvm_2_csv_file(raw_feature_file=test_raw_data_file, csv_fi
 if __name__ == '__main__':
     # clean_feature_map()
     # transfer_libsvm_2_csv_file()
-    # test_sample_csv_file()
+    test_sample_csv_file()
 
     # batch_transfer_libsvm_2_csv_file(raw_feature_file=train_raw_data_file, csv_file=train_csv_file, n_threads=n_threads)
     # batch_transfer_libsvm_2_csv_file(raw_feature_file=test_raw_data_file, csv_file=test_csv_file, n_threads=n_threads)
 
-    # transfer_libsvm_2_csv_file(raw_feature_file=train_raw_data_file, csv_file=train_csv_file)
     transfer_libsvm_2_csv_file(raw_feature_file=test_raw_data_file, csv_file=test_csv_file)
+    transfer_libsvm_2_csv_file(raw_feature_file=train_raw_data_file, csv_file=train_csv_file)

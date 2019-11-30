@@ -7,11 +7,9 @@
 @time: 20191128
 """
 import os
-import getpass
 import platform
 
 plat = platform.system().lower()
-
 assert plat in ("linux", "windows", "darwin"), "platform is not linux or windows or mac!"
 
 PROJECT_NAME = "Test"
@@ -19,18 +17,21 @@ PROJECT_NAME = "Test"
 if plat == "linux":
     user = "zhangmeng"
     data_path = os.path.join("/home/%s/" % user, "project_data", PROJECT_NAME)
+    project_path = os.path.join("/home/%s/" % user, PROJECT_NAME)
 elif plat == "windows":
     data_path = os.path.join("E:\project_data", PROJECT_NAME)
+    project_path = os.path.dirname(os.getcwd())
 else:
     user = "arrnos"
     data_path = os.path.join("/Users/", user, "project_data", PROJECT_NAME)
+    project_path = os.path.dirname(os.getcwd())
 
 assert os.path.isdir(data_path), "%s不存在！" % data_path
 
 middle_path = os.path.join(data_path, "middle_file")
 xgb_path = os.path.join(data_path, "xgb")
-
 feature_map_file = os.path.join(xgb_path, "train_feature_map")
+feature_info_file = os.path.join(project_path, "config", "feature_info.csv")
 
 if plat == "linux":
     train_libsvm_file = os.path.join(data_path, "train_libsvm_feature")

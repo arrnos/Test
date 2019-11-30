@@ -11,7 +11,6 @@ xgb_libsvm_feature = [
     "all_call_num",
     "avgerage_waiting_time_of_dialogue",
     "consult_type",
-    "consult_type_CALL",
     "contain_education_or_promotion_key_word_in_dialogue",
     "contain_price_key_word_in_dialogue",
     "create_user",
@@ -99,9 +98,9 @@ xgb_libsvm_feature = [
 ]
 
 feature_map_ignore_ls = ["consult", "age", "num", "dialogue", "entryDate", "time", "saturation", "ratio", "rate",
-                         "amount", "siteId", "CALL", "GREATBEAR"]
+                         "amount", "siteId", "GREATBEAR"]
 
-merge_feature_ls = ["oppor_source", "dialogue_start_at", "create_user"]
+merge_feature_ls = ["oppor_source", "dialogue_start_at", "create_user", "consult_type"]
 
 message_feature = ["不良信用记录", "优惠券", "保障方式", "关心的问题",
                    "减免学费", "可学习时间", "咨询目的", "城市",
@@ -115,3 +114,7 @@ message_feature = ["不良信用记录", "优惠券", "保障方式", "关心的
 drop_feature = ["search_key_word"] + message_feature
 
 xgb_extract_feature = [x for x in xgb_libsvm_feature if x not in drop_feature]
+
+if __name__ == '__main__':
+    for f in xgb_extract_feature:
+        print(f)
