@@ -114,11 +114,9 @@ if __name__ == '__main__':
     # clean_feature_map()
     # transfer_libsvm_2_csv_file()
     # test_sample_csv_file()
-    import sys
 
-    n_threads = int(sys.argv[1])
     # batch_transfer_libsvm_2_csv_file(raw_feature_file=train_raw_data_file, csv_file=train_csv_file, n_threads=n_threads)
     # batch_transfer_libsvm_2_csv_file(raw_feature_file=test_raw_data_file, csv_file=test_csv_file, n_threads=n_threads)
 
-    transfer_libsvm_2_csv_file(raw_feature_file=train_raw_data_file, csv_file=train_csv_file)
-    # transfer_libsvm_2_csv_file(raw_feature_file=test_raw_data_file, csv_file=test_csv_file)
+    # transfer_libsvm_2_csv_file(raw_feature_file=train_raw_data_file, csv_file=train_csv_file)
+    transfer_libsvm_2_csv_file(raw_feature_file=test_raw_data_file, csv_file=test_csv_file)
