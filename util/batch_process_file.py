@@ -9,7 +9,7 @@
 
 import os
 import threading
-
+import time
 
 class my_thread(threading.Thread):
     def __init__(self, name, in_file, out_file, func):
@@ -26,17 +26,23 @@ class my_thread(threading.Thread):
 
 
 def batch_process_file(process_func, input_file_path, output_file_path, n_threads=25):
+    time1 = time.time()
+    assert input_file_path, "输入文件不存在！"
     file_name_base = os.path.basename(input_file_path) + "_"
     file_dir = os.path.dirname(input_file_path)
-    file_line_num = int(os.popen("wc -l %s" % input_file_path).readlines()[0].split(" ")[0])
+    print(os.popen("wc -l %s" % input_file_path).readlines())
+    file_line_num = int(os.popen("wc -l %s" % input_file_path).readlines()[0].strip().split(" ")[0])
     print("输入文件总行数：", file_line_num)
     avg_line_num = file_line_num // n_threads + 1
-    cmd = "split -l %d %s -d -a 2 %s" % (avg_line_num, input_file_path, file_name_base)
+    cmd = "split -l %d %s %s" % (avg_line_num, input_file_path, file_name_base)
     print(cmd)
+    os.chdir(os.path.dirname(input_file_path))
     os.system(cmd)
 
     split_input_file_ls = sorted([os.path.join(file_dir, x) for x in os.listdir(file_dir) if file_name_base in x])
     split_output_file_ls = [x + "_out" for x in split_input_file_ls]
+    print("split_input_file:\n", "\n".join(split_output_file_ls))
+
     thread_ls = []
     for i, (input_file_i, output_file_i) in enumerate(zip(split_input_file_ls, split_output_file_ls)):
         thread_i = my_thread(str(i), input_file_i, output_file_i, process_func)
@@ -54,7 +60,10 @@ def batch_process_file(process_func, input_file_path, output_file_path, n_thread
     print(cmd_remove)
     os.system(cmd_remove)
 
-    print("处理任务已完成！outfile:%s" % output_file_path)
+    out_file_line_num = int(os.popen("wc -l %s" % output_file_path).readlines()[0].strip().split(" ")[0])
+    time2 = time.time()
+    print("处理任务已完成！耗时：%.3f min,输出文件行数：%d, outfile:%s" % ((time2-time1)/60,out_file_line_num,output_file_path))
+
 
 
 def process_func_test(in_file, out_file):
@@ -68,4 +77,7 @@ def process_func_test(in_file, out_file):
 
 
 if __name__ == '__main__':
-    batch_process_file(process_func_test, "./test_libsvm_feature", "./out_test", 5)
+    from config.file_path_config import *
+    import sys
+    n_threads = int(sys.argv[1])
+    batch_process_file(process_func_test, test_raw_data_file, "./out_test", n_threads)

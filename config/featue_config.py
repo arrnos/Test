@@ -15,14 +15,9 @@ xgb_libsvm_feature = [
     "contain_education_or_promotion_key_word_in_dialogue",
     "contain_price_key_word_in_dialogue",
     "create_user",
-    "create_user_CMS_CREATE",
-    "create_user_robot",
-    "create_user_system",
     "delta_days_from_entryDate",
     "delta_time_of_create_time_and_operator_time",
     "dialogue_start_at",
-    "dialogue_start_at_deep",
-    "dialogue_start_at_early",
     "duration_of_dialogue",
     "educationalBackground",
     "first_proj_id",
@@ -42,24 +37,7 @@ xgb_libsvm_feature = [
     "opp_completed_rate",
     "opp_following_num",
     "opp_today_following_num",
-    "oppor_source_CS",
-    "oppor_source_MESSAGE",
-    "oppor_source_MESSAGE_APP_FLOW",
-    "oppor_source_MESSAGE_APP_FREE_FLOW",
-    "oppor_source_MESSAGE_CMS",
-    "oppor_source_MESSAGE_CMS_FREE_FLOW",
-    "oppor_source_MESSAGE_CS_GREATBEAR",
-    "oppor_source_MESSAGE_CS_NEWDRAGNET",
-    "oppor_source_MESSAGE_DELAY_ALLO",
-    "oppor_source_MESSAGE_DELAY_ALLO_INSERT",
-    "oppor_source_MESSAGE_INSERT",
-    "oppor_source_MESSAGE_NEW",
-    "oppor_source_MESSAGE_NEW_INSERT",
-    "oppor_source_MESSAGE_lite",
-    "oppor_source_ONLINE_CS",
-    "oppor_source_ONLINE_CS_GREATBEAR",
-    "oppor_source_ONLINE_CS_ROBOT",
-    "oppor_source_message",
+    "oppor_source",
     "pastNday_advertiser_applied_ratio",
     "pastNday_advertiser_distribution_num",
     "pastNday_advertiser_order_num",
@@ -120,4 +98,20 @@ xgb_libsvm_feature = [
     "选择数学英语免考专业"
 ]
 
-feature_map_ignore_ls = ["consult","age","num","dialogue","entryDate","time","saturation","ratio","rate","amount","siteId","CALL","GREATBEAR"]
+feature_map_ignore_ls = ["consult", "age", "num", "dialogue", "entryDate", "time", "saturation", "ratio", "rate",
+                         "amount", "siteId", "CALL", "GREATBEAR"]
+
+merge_feature_ls = ["oppor_source", "dialogue_start_at", "create_user"]
+
+message_feature = ["不良信用记录", "优惠券", "保障方式", "关心的问题",
+                   "减免学费", "可学习时间", "咨询目的", "城市",
+                   "备注", "姓名", "学习基础", "学习方式",
+                   "学历提升目的", "工作地点", "工作多久", "平时时间",
+                   "年龄", "性别", "性格", "意向专业",
+                   "意向院校", "户籍归属", "擅长科目", "是否了解免联考政策",
+                   "期望毕业时长", "期望考证方式", "毕业时长", "目前学历",
+                   "目前状态", "目标学历", "选择数学英语免考专业"]
+
+drop_feature = ["search_key_word"] + message_feature
+
+xgb_extract_feature = [x for x in xgb_libsvm_feature if x not in drop_feature]
