@@ -30,7 +30,9 @@ assert os.path.isdir(data_path), "%s不存在！" % data_path
 
 middle_path = os.path.join(data_path, "middle_file")
 xgb_path = os.path.join(data_path, "xgb")
+
 feature_map_file = os.path.join(xgb_path, "train_feature_map")
+category_value_path = os.path.join(data_path,"category_value_path")
 
 if plat == "linux":
     train_libsvm_file = os.path.join(data_path, "train_libsvm_feature")

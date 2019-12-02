@@ -118,3 +118,4 @@ xgb_extract_feature = [x for x in xgb_libsvm_feature if x not in drop_feature]
 if __name__ == '__main__':
     for f in xgb_extract_feature:
         print(f)
+    print(len(xgb_extract_feature))
