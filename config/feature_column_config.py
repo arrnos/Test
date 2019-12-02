@@ -18,17 +18,14 @@ from util.dump_category_values_2_file import read_feature_values_from_file as re
 SPARSE_EMBEDDING_SIZE = 8
 BUCKTE_EMBEDDING_SIZE = 8
 
-log_func = lambda x: tf.math.log1p(tf.cast(x, tf.float32))
-normalizer_func = None
-
+# 配置连续变量的归一化函数和分桶边界
 log_features = []
 normalizer_features = []
 none_features = [x for x in CONTINUOUS_FEATURES if x not in log_features + normalizer_features]
 
-# 配置连续变量的归一化函数和分桶边界
 dense_process_dict = dict(
-    [(x, log_func) for x in log_features] +
-    [(x, normalizer_func) for x in normalizer_features] +
+    [(x, lambda x: tf.math.log1p(tf.cast(x, tf.float32))) for x in log_features] +
+    [(x, None) for x in normalizer_features] +
     [(x, None) for x in none_features])
 
 dense_bound_dict = {
@@ -60,7 +57,8 @@ sparse_features_emb = \
 # =============================连续特征=======================================
 
 # dense feature
-dense_features = [fc.numeric_column(feature, normalizer_fn=dense_process_dict[feature]) for feature in CONTINUOUS_FEATURES]
+dense_features = [fc.numeric_column(feature, normalizer_fn=dense_process_dict[feature]) for feature in
+                  CONTINUOUS_FEATURES]
 
 # dense embedding
 dense_features_emb = [fc.embedding_column(fc.bucketized_column(feature, dense_bound_dict[feature]),
@@ -90,6 +88,7 @@ InteractionColumns = list(chain(*InteractionColumns))
 
 # ========================= DNN feature column =============================
 DNNColumns = InteractionColumns
+
 # 注意池化方法
 # print(LinnerColumns)
 # print(len(LinnerColumns))
