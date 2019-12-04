@@ -11,7 +11,7 @@ import tensorflow as tf
 from config.file_path_config import *
 
 FEATURE_INFOS = [
-    ["label", tf.int64, 0, 1],
+    ["label", tf.string, "", 1],
 
     ["account_age", tf.int64, 0, 1],
     ["alignment_day", tf.string, "", 1],
@@ -79,7 +79,7 @@ FEATURE_INFOS = [
 
 def parse_feature_config():
     feature_name_list = []
-    feature_dtype_list = []
+    feature_dtype_dict = {}
     feature_default_list = []
     feature_use_list = []
     feature_name_use_list = []
@@ -90,7 +90,7 @@ def parse_feature_config():
     for i, arr in enumerate(FEATURE_INFOS):
         f_name, dtype, default, use = arr
         feature_name_list.append(f_name)
-        feature_dtype_list.append(dtype)
+        feature_dtype_dict[f_name] = dtype
 
         assert dtype in [tf.string, tf.int64, tf.float32]
 
@@ -109,16 +109,16 @@ def parse_feature_config():
         else:
             continuous_feature_list.append(f_name)
 
-    return feature_name_list, feature_dtype_list, feature_default_list, feature_use_list, feature_name_use_list, category_feature_list, continuous_feature_list, feature_keras_input_dict
+    return feature_name_list, feature_dtype_dict, feature_default_list, feature_use_list, feature_name_use_list, category_feature_list, continuous_feature_list, feature_keras_input_dict
 
 
-FEATURE_NAMES, FEATURE_DTYPES, \
+FEATURE_NAMES, FEATURE_DTYPE_DICT, \
 FEATURE_DEFAULTS, FEATURE_USE_LIST, FEATURE_NAME_USE_LIST, \
 CATEGORY_FEATURES, CONTINUOUS_FEATURES, \
 FEATURE_KERAS_INPUT_DICT = parse_feature_config()
 
 # 参数初步校验
-assert len(FEATURE_NAMES) == len(FEATURE_DTYPES)
+assert len(FEATURE_NAMES) == len(FEATURE_DTYPE_DICT)
 assert len(FEATURE_USE_LIST) == len(FEATURE_DEFAULTS) == len(FEATURE_NAME_USE_LIST)
 assert len(CATEGORY_FEATURES) + len(CONTINUOUS_FEATURES) == len(FEATURE_KERAS_INPUT_DICT)
 assert len(FEATURE_NAME_USE_LIST) == len(FEATURE_KERAS_INPUT_DICT) + 1

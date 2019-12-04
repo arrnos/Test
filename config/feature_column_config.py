@@ -13,7 +13,7 @@ import numpy as np
 from tensorflow import feature_column as fc
 
 from config.deep_feature_config import *
-from util.dump_category_values_2_file import read_feature_values_from_file as read_feature_values
+from util.dump_category_value_2_file import read_feature_values_from_file as read_feature_values
 
 SPARSE_EMBEDDING_SIZE = 8
 BUCKTE_EMBEDDING_SIZE = 8

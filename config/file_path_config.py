@@ -32,7 +32,8 @@ middle_path = os.path.join(data_path, "middle_file")
 xgb_path = os.path.join(data_path, "xgb")
 
 feature_map_file = os.path.join(xgb_path, "train_feature_map")
-category_value_path = os.path.join(data_path,"category_value_path")
+category_value_path = os.path.join(data_path, "category_value_path")
+min_max_value_path = os.path.join(data_path, "min_max_value_path","min_max_dict")
 
 if plat == "linux":
     train_libsvm_file = os.path.join(data_path, "train_libsvm_feature")
