@@ -35,24 +35,24 @@ FEATURE_INFOS = [
     ["graduateSchool", tf.string, "", 1],
     ["major", tf.string, "", 1],
     ["marriageState", tf.string, "", 1],
-    ["message_opp_ditf.stringibution_num", tf.int64, 0, 1],
-    ["message_opp_ditf.stringibution_saturation", tf.float32, 0.0, 1],
+    ["message_opp_distribution_num", tf.int64, 0, 1],
+    ["message_opp_distribution_saturation", tf.float32, 0.0, 1],
     ["message_opp_limit_num", tf.int64, 0, 1],
     ["nationalEdu", tf.string, "", 1],
     ["number_of_dialogue", tf.int64, 0, 1],
     ["number_of_student_dialogue", tf.int64, 0, 1],
-    ["online_opp_ditf.stringibution_num", tf.int64, 0, 1],
-    ["online_opp_ditf.stringibution_saturation", tf.float32, 0.0, 1],
+    ["online_opp_distribution_num", tf.int64, 0, 1],
+    ["online_opp_distribution_saturation", tf.float32, 0.0, 1],
     ["online_opp_limit_num", tf.int64, 0, 1],
     ["opp_completed_rate", tf.float32, 0.0, 1],
     ["opp_following_num", tf.int64, 0, 1],
     ["opp_today_following_num", tf.int64, 0, 1],
     ["oppor_source", tf.string, "", 1],
     ["pastNday_advertiser_applied_ratio", tf.float32, 0.0, 1],
-    ["pastNday_advertiser_ditf.stringibution_num", tf.int64, 0, 1],
+    ["pastNday_advertiser_distribution_num", tf.int64, 0, 1],
     ["pastNday_advertiser_order_num", tf.int64, 0, 1],
     ["pastNday_applied_ratio_on_siteId", tf.float32, 0.0, 1],
-    ["pastNday_ditf.stringibution_num_on_siteId", tf.int64, 0, 1],
+    ["pastNday_distribution_num_on_siteId", tf.int64, 0, 1],
     ["pastNday_order_num_on_siteId", tf.int64, 0, 1],
     ["past_n_days_acc_alignment_num", tf.int64, 0, 1],
     ["past_n_days_acc_order_amount", tf.float32, 0.0, 1],
@@ -63,8 +63,8 @@ FEATURE_INFOS = [
     ["promotion_type", tf.string, "", 1],
     ["quantum_id", tf.string, "", 1],
     ["race", tf.string, "", 1],
-    ["recycle_opp_ditf.stringibution_num", tf.int64, 0, 1],
-    ["recycle_opp_ditf.stringibution_saturation", tf.float32, 0.0, 1],
+    ["recycle_opp_distribution_num", tf.int64, 0, 1],
+    ["recycle_opp_distribution_saturation", tf.float32, 0.0, 1],
     ["recycle_opp_limit_num", tf.int64, 0, 1],
     ["residenceType", tf.string, "", 1],
     ["site_source", tf.string, "", 1],
@@ -145,6 +145,7 @@ if __name__ == '__main__':
 
     print(CATEGORY_FEATURES)
     print(CONTINUOUS_FEATURES)
+    print(FEATURE_NAMES)
 
     # dataset = read_csv_2_dataset(test_csv_file, shuffle_size=10000, batch_size=256)
     # cnt = 0
