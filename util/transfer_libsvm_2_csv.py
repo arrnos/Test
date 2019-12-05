@@ -88,21 +88,21 @@ def transfer_libsvm_2_csv_file(raw_feature_file=test_raw_data_file, csv_file=tes
             fout.write(csv_str + "\n")
     print("timeout:{} min,  文件处理完成:{}".format((time.time() - time1) / 60, raw_feature_file))
 
-
-def test_sample_csv_file(csv_file=test_csv_file):
-    import pandas as pd
-    pd.set_option("display.max_rows", 500)
-    pd.set_option("display.max_columns", 500)
-
-    df = pd.read_csv(csv_file)
-    df.columns = ["label"] + xgb_extract_feature
-
-    print(df.describe())
-
-    print(df.isna().sum(axis=0))
-
-    for f in merge_feature_ls:
-        print(f, "\n", df[f].value_counts(dropna=False))
+#
+# def test_sample_csv_file(csv_file=test_csv_file):
+#     import pandas as pd
+#     pd.set_option("display.max_rows", 500)
+#     pd.set_option("display.max_columns", 500)
+#
+#     df = pd.read_csv(csv_file)
+#     df.columns = ["label"] + xgb_extract_feature
+#
+#     print(df.describe())
+#
+#     print(df.isna().sum(axis=0))
+#
+#     for f in merge_feature_ls:
+#         print(f, "\n", df[f].value_counts(dropna=False))
 
 
 def batch_transfer_libsvm_2_csv_file(raw_feature_file=test_raw_data_file, csv_file=test_csv_file, n_threads=20):
@@ -113,7 +113,7 @@ def batch_transfer_libsvm_2_csv_file(raw_feature_file=test_raw_data_file, csv_fi
 if __name__ == '__main__':
     # clean_feature_map()
     # transfer_libsvm_2_csv_file()
-    test_sample_csv_file()
+    # test_sample_csv_file()
 
     # batch_transfer_libsvm_2_csv_file(raw_feature_file=train_raw_data_file, csv_file=train_csv_file, n_threads=n_threads)
     # batch_transfer_libsvm_2_csv_file(raw_feature_file=test_raw_data_file, csv_file=test_csv_file, n_threads=n_threads)

@@ -14,31 +14,15 @@ from tensorflow import feature_column as fc
 
 from config.deep_feature_config import *
 from util.cate_values_util import read_feature_values_from_file as read_feature_values
+from util.dense_values_util import dense_process_dict
 
 SPARSE_EMBEDDING_SIZE = 8
 BUCKTE_EMBEDDING_SIZE = 8
 
 # 配置连续变量的归一化函数和分桶边界
-log_features = []
-normalizer_features = []
-none_features = [x for x in CONTINUOUS_FEATURES if x not in log_features + normalizer_features]
+dense_process_dict = dense_process_dict
 
-dense_process_dict = dict(
-    [(x, lambda x: tf.math.log1p(tf.cast(x, tf.float32))) for x in log_features] +
-    [(x, None) for x in normalizer_features] +
-    [(x, None) for x in none_features])
-
-dense_bound_dict = {
-    "opp_create_obs_interval_minutes": [0.0001] + list(np.arange(1, 8)) + list(np.arange(80, 120, 5) / 10),
-    "call_record_tot_length": [0.0001] + list(np.arange(5, 60, 5) / 10) + list(np.arange(6, 10)),
-    "call_record_eff_num": [0.0001, 3, 6, 10, 20],
-    "free_learn_video_length": [0.0001] + list(np.arange(5, 60, 5) / 10) + list(np.arange(6, 12)),
-    "free_learn_live_length": [0.0001] + list(np.arange(5, 60, 5) / 10) + list(np.arange(6, 12)),
-    "tot_chat_count": [0.0001] + list(np.arange(5, 30, 5) / 10) + list(np.arange(3, 7)),
-    "con_chat_count": [0.0001] + list(np.arange(5, 30, 5) / 10) + list(np.arange(3, 7)),
-    "stu_chat_count": [0.0001] + list(np.arange(5, 30, 5) / 10) + list(np.arange(3, 7)),
-    "stu_con_ratio": [0.0001] + list(np.arange(1, 10) / 100) + list(np.arange(1, 6) / 10)
-}
+dense_bound_list = [x/10 for x in range(1,10)]
 
 # ===========================离散特征===============================
 
@@ -61,7 +45,7 @@ dense_features = [fc.numeric_column(feature, normalizer_fn=dense_process_dict[fe
                   CONTINUOUS_FEATURES]
 
 # dense embedding
-dense_features_emb = [fc.embedding_column(fc.bucketized_column(feature, dense_bound_dict[feature]),
+dense_features_emb = [fc.embedding_column(fc.bucketized_column(feature, dense_bound_list),
                                           BUCKTE_EMBEDDING_SIZE) for feature in dense_features]
 
 # ========================= LR feature column =============================
