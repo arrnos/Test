@@ -12,7 +12,7 @@ from codecs import open
 
 import numpy as np
 
-from config.deep_feature_config import *
+from config.deep_feature_config import CONTINUOUS_FEATURES, FEATURE_NAMES, LOG_MIN_MAX_METHOD_LIST, MIN_MAX_METHOD_LIST
 from config.file_path_config import *
 
 
@@ -20,7 +20,7 @@ def dump_min_max_values_2_file(csv_file, out_path):
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     rs_dict = {}
     for f in CONTINUOUS_FEATURES:
-        rs_dict[f] = [np.inf, -np.inf]
+        rs_dict[f] = [np.inf, -np.inf, 0, 0, 0]
 
     with open(csv_file, "r", "utf-8") as fin:
         for i, line in enumerate(fin):
@@ -34,18 +34,31 @@ def dump_min_max_values_2_file(csv_file, out_path):
                 f_value = float(f_value)
                 rs_dict[f][0] = min(rs_dict[f][0], f_value)
                 rs_dict[f][1] = max(rs_dict[f][1], f_value)
+                rs_dict[f][3] += f_value
+                rs_dict[f][4] += 1
 
             if i > 0 and i % 5000 == 0:
                 print("line:", i)
+    # 求均值
+    for k in rs_dict.keys():
+        min_, max_, mean_, sum_, cnt_ = rs_dict[k]
+        mean_ = sum_ / cnt_ if cnt_ else 0
+        rs_dict[k][2] = mean_
 
     pickle.dump(rs_dict, open(out_path, "wb"))
+
+    print(rs_dict)
 
     print("min max value dump completed!", out_path)
 
 
 def load_min_max_value_dict_from_file(min_max_value_save_path):
     assert os.path.exists(min_max_value_save_path)
-    return pickle.load(open(min_max_value_save_path, "rb"))
+    save_dict = pickle.load(open(min_max_value_save_path, "rb"))
+    min_max_dict = {}
+    for key, (min_value, max_value, mean_value, _, _) in save_dict.items():
+        min_max_dict[key] = (min_value, max_value)
+    return min_max_dict
 
 
 def prepare_log_min_max_dict(min_max_dict):
@@ -55,17 +68,17 @@ def prepare_log_min_max_dict(min_max_dict):
     return log_config_dict
 
 
-min_max_dict = load_min_max_value_dict_from_file(min_max_value_path)
-log_min_max_dict = prepare_log_min_max_dict(min_max_dict)
+MIN_MAX_DICT = load_min_max_value_dict_from_file(min_max_value_path)
+LOG_MIN_MAX_DICT = prepare_log_min_max_dict(MIN_MAX_DICT)
 
 
 def min_max_norm_func(f):
-    min_value, max_value = min_max_dict[f]
+    min_value, max_value = MIN_MAX_DICT[f]
     return lambda x: 1.0 * (x - min_value) / (max_value - min_value)
 
 
 def log_min_max_func(f):
-    min_value, max_value = log_min_max_dict[f]
+    min_value, max_value = LOG_MIN_MAX_DICT[f]
     return lambda x: 1.0 * (np.log1p(x) - min_value) / (max_value - min_value)
 
 
@@ -76,7 +89,7 @@ dense_process_dict = dict(
 if __name__ == '__main__':
     dump_min_max_values_2_file(train_csv_file, min_max_value_path)
 
-    print(min_max_dict)
-    print(log_min_max_dict)
-    print(min_max_dict["account_age"])
-    print(log_min_max_dict["account_age"])
+    print(MIN_MAX_DICT)
+    print(LOG_MIN_MAX_DICT)
+    print(MIN_MAX_DICT["account_age"])
+    print(LOG_MIN_MAX_DICT["account_age"])

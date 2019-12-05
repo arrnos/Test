@@ -9,7 +9,6 @@
 
 from itertools import chain
 
-import numpy as np
 from tensorflow import feature_column as fc
 
 from config.deep_feature_config import *
@@ -21,8 +20,7 @@ BUCKTE_EMBEDDING_SIZE = 8
 
 # 配置连续变量的归一化函数和分桶边界
 dense_process_dict = dense_process_dict
-
-dense_bound_list = [x/10 for x in range(1,10)]
+dense_bound_list = [x / 10 for x in range(1, 10)]
 
 # ===========================离散特征===============================
 
