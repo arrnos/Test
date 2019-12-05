@@ -3,19 +3,16 @@
 """
 @version: python3.7
 @author: zhangmeng
-@file: dump_category_value_2_file.py
+@file: cate_values_util.py
 @time: 2019/12/02
 """
 
-from config.deep_feature_config import *
-from config.file_path_config import category_value_path
-import os
-from util.load_dict import load_dict
-from codecs import open
-from collections import defaultdict
-import numpy as np
-import tensorflow as tf
 import pickle
+from codecs import open
+
+import numpy as np
+
+from config.deep_feature_config import *
 
 
 def dump_min_max_values_2_file(csv_file, out_path):
@@ -33,10 +30,7 @@ def dump_min_max_values_2_file(csv_file, out_path):
                 f_value = features[f]
                 if not f_value:
                     continue
-                if FEATURE_DTYPE_DICT[f] == tf.int64:
-                    f_value = int(f_value)
-                if FEATURE_DTYPE_DICT[f] == tf.float32:
-                    f_value = float(f_value)
+                f_value = float(f_value)
                 rs_dict[f][0] = min(rs_dict[f][0], f_value)
                 rs_dict[f][1] = max(rs_dict[f][1], f_value)
 
