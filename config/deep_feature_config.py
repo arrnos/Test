@@ -11,7 +11,7 @@ FEATURE_INFOS = [
 
     # [is_use, f_name, f_type, default, norm_method]
 
-    [1, "label", tf.string, "", None],
+    [1, "label", tf.int64, 0, None],
 
     [1, "account_age", tf.int64, 0, "min_max"],
     [1, "alignment_day", tf.string, "", None],
@@ -132,58 +132,9 @@ assert len(FEATURE_USE_LIST) == len(FEATURE_DEFAULT_DICT) == len(FEATURE_NAME_US
 assert len(CATEGORY_FEATURES) + len(CONTINUOUS_FEATURES) == len(FEATURE_KERAS_INPUT_DICT)
 assert len(FEATURE_NAME_USE_LIST) == len(FEATURE_KERAS_INPUT_DICT) + 1
 
-
-# 从csv文件读取dataset
-
-def _parse_line(line, csv_feature_defaults):
-    fields = tf.io.decode_csv(line, csv_feature_defaults, select_cols=FEATURE_USE_LIST)
-    features = dict(zip(FEATURE_NAME_USE_LIST, fields))
-    label = features.pop("label")
-    return features, label
-
-
-def read_csv_2_dataset(csv_file, mean_dict_save_path, shuffle_size=10000, batch_size=256):
-    # 加载csv默认值list
-    mean_dict = load_mean_dict(mean_dict_save_path)
-    csv_feature_defaults = [
-        mean_dict[f] if f in mean_dict else FEATURE_DEFAULT_DICT[f] for f in FEATURE_NAME_USE_LIST]
-    # print(csv_feature_defaults)
-
-    data = tf.data.TextLineDataset(csv_file)
-    data = data.shuffle(shuffle_size).map(lambda x: _parse_line(x, csv_feature_defaults)).batch(batch_size)
-    return data
-
-
-def load_mean_dict(save_path):
-    import os
-    import pickle
-    assert os.path.exists(save_path)
-    save_dict = pickle.load(open(save_path, "rb"))
-    mean_dict = {}
-    for key, (min_value, max_value, mean_value, _, _) in save_dict.items():
-        mean_dict[key] = mean_value
-    return mean_dict
-
-
 if __name__ == '__main__':
-    # for i in [FEATURE_NAMES, FEATURE_DTYPES, FEATURE_DEFAULTS, FEATURE_KERAS_INPUT_DICT]:
-    #     print(i)
-
     print(CATEGORY_FEATURES)
     print(CONTINUOUS_FEATURES)
     print(FEATURE_NAMES)
     print(MIN_MAX_METHOD_LIST)
     print(LOG_MIN_MAX_METHOD_LIST)
-
-    from config.file_path_config import test_csv_file, min_max_value_path
-
-    dataset = read_csv_2_dataset(test_csv_file, min_max_value_path, shuffle_size=10000, batch_size=256)
-    cnt = 0
-    for d in dataset:
-        cnt += 1
-        print(d[1])
-        for k, v in d[0].items():
-            print(k)
-            print(v)
-        if cnt > 1:
-            break
