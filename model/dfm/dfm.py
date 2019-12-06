@@ -88,7 +88,8 @@ class DFM():
 
 
 def train_and_test():
-    train_dataset = read_csv_2_dataset(args.train_data_path, min_max_value_path, shuffle_size=10000, batch_size=args.batch_size)
+    train_dataset = read_csv_2_dataset(args.train_data_path, min_max_value_path, shuffle_size=10000,
+                                       batch_size=args.batch_size)
     valid_dataset = read_csv_2_dataset(args.valid_data_path, min_max_value_path, batch_size=1024)
     test_dataset = read_csv_2_dataset(args.test_data_path, min_max_value_path, batch_size=1024)
 
@@ -104,8 +105,11 @@ def train_and_test():
     early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_auc', patience=4, mode="max")
     reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=1, min_lr=0)
 
-    history = model.fit(train_dataset, epochs=args.epochs, callbacks=[early_stop, reduce_lr], validation_data=valid_dataset,
+    time_1 = time.time()
+    history = model.fit(train_dataset, epochs=args.epochs, callbacks=[early_stop, reduce_lr],
+                        validation_data=valid_dataset,
                         class_weight={0: 1., 1: 50.})
+    time_2 = time.time()
 
     print("【history】")
     print(history.history)
@@ -114,6 +118,8 @@ def train_and_test():
     print(model.evaluate(test_dataset))
 
     tf.keras.models.save_model(model, "dfm_model")
+    print("训练耗时：%.2f min" % ((time_2 - time_1) / 60))
+
 
 
 if __name__ == '__main__':
@@ -121,6 +127,7 @@ if __name__ == '__main__':
     from config.feature_column_config import *
     from util.dataset_read_util import read_csv_2_dataset
     import argparse
+    import time
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-batch_size", type=int, default=256)
@@ -138,5 +145,7 @@ if __name__ == '__main__':
     print("\nArgument:", args, "\n")
 
     assert SPARSE_EMBEDDING_SIZE == BUCKTE_EMBEDDING_SIZE
-
+    time1 = time.time()
     train_and_test()
+    time2 = time.time()
+    print("总耗时：%.2f min" % ((time2 - time1) / 60))
