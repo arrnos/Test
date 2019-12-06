@@ -68,29 +68,5 @@ def prepare_log_min_max_dict(min_max_dict):
     return log_config_dict
 
 
-MIN_MAX_DICT = load_min_max_value_dict_from_file(min_max_value_path)
-LOG_MIN_MAX_DICT = prepare_log_min_max_dict(MIN_MAX_DICT)
-
-
-def min_max_norm_func(f):
-    min_value, max_value = MIN_MAX_DICT[f]
-    func = lambda x: 1.0 * (tf.cast(x,float) - min_value) / (max_value - min_value)
-    return func
-
-
-def log_min_max_func(f):
-    min_value, max_value = LOG_MIN_MAX_DICT[f]
-    return lambda x: 1.0 * (np.log1p(x) - min_value) / (max_value - min_value)
-
-
-dense_process_dict = dict(
-    [(f, log_min_max_func(f)) for f in LOG_MIN_MAX_METHOD_LIST] +
-    [(f, min_max_norm_func(f)) for f in MIN_MAX_METHOD_LIST])
-
 if __name__ == '__main__':
     dump_min_max_values_2_file(train_csv_file, min_max_value_path)
-
-    print(MIN_MAX_DICT)
-    print(LOG_MIN_MAX_DICT)
-    print(MIN_MAX_DICT["account_age"])
-    print(LOG_MIN_MAX_DICT["account_age"])

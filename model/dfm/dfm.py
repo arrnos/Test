@@ -114,10 +114,10 @@ def train_and_test():
     print("【history】")
     print(history.history)
 
-    print("\n【evaluate】\n")
-    print(model.evaluate(test_dataset))
+    # print("\n【evaluate】\n")
+    # print(model.evaluate(test_dataset))
 
-    tf.keras.models.save_model(model, "dfm_model")
+    # tf.keras.models.save_model(model, "dfm_model")
     print("训练耗时：%.2f min" % ((time_2 - time_1) / 60))
 
 
