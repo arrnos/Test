@@ -3,7 +3,7 @@
 """
 @version: python3.7
 @author: zhangmeng
-@file: train.py
+@file: xgb_libsvm.py
 @time: 2019/11/28
 """
 import xgboost as xgb

@@ -22,6 +22,16 @@ BUCKTE_EMBEDDING_SIZE = 8
 dense_process_dict = dense_process_dict
 dense_bound_list = [x / 10 for x in range(1, 10)]
 
+# =============================连续特征=======================================
+
+# dense feature
+dense_features = [fc.numeric_column(feature, normalizer_fn=dense_process_dict[feature]) for feature in
+                  CONTINUOUS_FEATURES]
+
+# dense embedding
+dense_features_emb = [fc.embedding_column(fc.bucketized_column(feature, dense_bound_list),
+                                          BUCKTE_EMBEDDING_SIZE) for feature in dense_features]
+
 # ===========================离散特征===============================
 
 # sparse feature
@@ -36,43 +46,32 @@ sparse_features_one_hot = \
 sparse_features_emb = \
     [fc.embedding_column(feature, SPARSE_EMBEDDING_SIZE) for feature in sparse_features]
 
-# =============================连续特征=======================================
-
-# dense feature
-dense_features = [fc.numeric_column(feature, normalizer_fn=dense_process_dict[feature]) for feature in
-                  CONTINUOUS_FEATURES]
-
-# dense embedding
-dense_features_emb = [fc.embedding_column(fc.bucketized_column(feature, dense_bound_list),
-                                          BUCKTE_EMBEDDING_SIZE) for feature in dense_features]
-
 # ========================= LR feature column =============================
 
-LinnerColumns = [
-    # sparse ont hot
-    sparse_features_one_hot,
-    # dense log
+LinerColumns = [
+    # sparse_features_one_hot,
     dense_features
-
 ]
-LinnerColumns = list(chain(*LinnerColumns))
+
+LinerColumns = list(chain(*LinerColumns))
 
 # ========================= FM feature column =============================
 InteractionColumns = [
-    # sparse emb
     sparse_features_emb,
-    # dense emb
-    dense_features_emb
-
+    # dense_features_emb
 ]
-InteractionColumns_pool = InteractionColumns
+
 InteractionColumns = list(chain(*InteractionColumns))
 
 # ========================= DNN feature column =============================
 DNNColumns = InteractionColumns
 
-# 注意池化方法
-# print(LinnerColumns)
-# print(len(LinnerColumns))
-# print(InteractionColumns)
-# print(len(InteractionColumns))
+if __name__ == '__main__':
+    print("线性模块：", len(LinerColumns))
+    print(LinerColumns)
+
+    print("DNN和交互模块:", len(InteractionColumns))
+    print(InteractionColumns)
+
+    # feature columns 处理函数校验
+

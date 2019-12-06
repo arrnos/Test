@@ -12,7 +12,7 @@ from codecs import open
 
 import numpy as np
 
-from config.deep_feature_config import CONTINUOUS_FEATURES, FEATURE_NAMES, LOG_MIN_MAX_METHOD_LIST, MIN_MAX_METHOD_LIST
+from config.deep_feature_config import *
 from config.file_path_config import *
 
 
@@ -74,7 +74,8 @@ LOG_MIN_MAX_DICT = prepare_log_min_max_dict(MIN_MAX_DICT)
 
 def min_max_norm_func(f):
     min_value, max_value = MIN_MAX_DICT[f]
-    return lambda x: 1.0 * (x - min_value) / (max_value - min_value)
+    func = lambda x: 1.0 * (tf.cast(x,float) - min_value) / (max_value - min_value)
+    return func
 
 
 def log_min_max_func(f):

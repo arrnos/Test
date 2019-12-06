@@ -86,12 +86,13 @@ def sample_data(total_data_path, sample_data_path, sample_nums):
 
 if __name__ == '__main__':
     import sys
-    sample_num = 1000
 
-    try:
-        sample_num = int(sys.argv[1])
-        print(sample_num)
-    except Exception as e:
-        print(e)
+    sample_num = 10000
+    data_file = train_csv_file
+    if sys.argv[1:]:
+        data_file = sys.argv[1]
+        sample_num = int(sys.argv[2])
+
+    print("final data file:", data_file)
     print("final sample_num:", sample_num)
-    sample_data(train_raw_data_file, train_raw_data_file + "_sample_%s" % sample_num, sample_num)
+    sample_data(data_file, data_file + "_sample_%s" % sample_num, sample_num)

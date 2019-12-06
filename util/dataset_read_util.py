@@ -10,7 +10,7 @@ from config.deep_feature_config import *
 
 
 # 从csv文件读取dataset
-def read_csv_2_dataset(csv_file, mean_dict_save_path, shuffle_size=10000, batch_size=256):
+def read_csv_2_dataset(csv_file, mean_dict_save_path, shuffle_size=None, batch_size=256):
     # 加载csv默认值list
     mean_dict = load_mean_dict(mean_dict_save_path)
     csv_feature_defaults = [
@@ -18,7 +18,9 @@ def read_csv_2_dataset(csv_file, mean_dict_save_path, shuffle_size=10000, batch_
     # print(csv_feature_defaults)
 
     data = tf.data.TextLineDataset(csv_file)
-    data = data.shuffle(shuffle_size).map(lambda x: _parse_line(x, csv_feature_defaults)).batch(batch_size)
+    if shuffle_size:
+        data = data.shuffle(shuffle_size)
+    data = data.map(lambda x: _parse_line(x, csv_feature_defaults)).batch(batch_size)
     return data
 
 # 单行解析
