@@ -11,11 +11,17 @@ from itertools import chain
 
 from tensorflow import feature_column as fc
 
-from util.cate_values_util import read_feature_values_from_file as read_feature_values
+from util.cate_values_util import read_feature_values_from_file
+from util.cate_values_util import read_feature_values_from_file_limit
+
 from util.dense_values_util import *
 
 SPARSE_EMBEDDING_SIZE = 8
 BUCKTE_EMBEDDING_SIZE = 8
+
+# 离散值values是否需要进行数量限制
+SPARSE_VALUES_LIMIT = 1
+read_feature_values = read_feature_values_from_file_limit if SPARSE_VALUES_LIMIT else read_feature_values_from_file
 
 # 连续变量的归一化后的分桶边界
 dense_bound_list = [x / 10 for x in range(1, 10)]
@@ -25,15 +31,33 @@ MIN_MAX_DICT = load_min_max_value_dict_from_file(min_max_value_path)
 LOG_MIN_MAX_DICT = prepare_log_min_max_dict(MIN_MAX_DICT)
 
 
+# def min_max_norm_func(f):
+#     min_value, max_value = MIN_MAX_DICT[f]
+#     func = lambda x: 1.0 * (tf.cast(x, float) - min_value) / (max_value - min_value)
+#     return func
+
 def min_max_norm_func(f):
     min_value, max_value = MIN_MAX_DICT[f]
-    func = lambda x: 1.0 * (tf.cast(x, float) - min_value) / (max_value - min_value)
+
+    def func(x):
+        x_float = tf.cast(x, tf.float32)
+        result = tf.where(x_float >= max_value, 1.0,
+                          1.0 * (x_float - min_value) / (max_value - min_value))
+        return result
+
     return func
 
 
 def log_min_max_func(f):
     min_value, max_value = LOG_MIN_MAX_DICT[f]
-    return lambda x: 1.0 * (tf.math.log1p(tf.cast(x, tf.float32)) - min_value) / (max_value - min_value)
+
+    def func(x):
+        x_float = tf.cast(x, tf.float32)
+        result = tf.where(x_float >= max_value, 1.0,
+                          1.0 * (tf.math.log1p(x_float) - min_value) / (max_value - min_value))
+        return result
+
+    return func
 
 
 dense_process_dict = dict(
