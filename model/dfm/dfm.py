@@ -6,16 +6,15 @@
 @file: dfm.py
 @time: 2019/12/06
 """
-import tensorflow as tf
 
 
-class DFM():
+class DFM(object):
 
-    def __init__(self, keras_input_dict, embbedding_size, interaction_columns, liner_columns,
+    def __init__(self, keras_input_dict, embedding_size, interaction_columns, liner_columns,
                  dnn_units=(128, 64), drop_ratio=0.5, use_liner=True, use_fm=True, use_dnn=True):
 
         self.keras_input_dict = keras_input_dict
-        self.embedding_size = embbedding_size
+        self.embedding_size = embedding_size
         self.interaction_columns = interaction_columns
         self.liner_columns = liner_columns
         self.dnn_units = dnn_units
@@ -119,7 +118,6 @@ def train_and_test():
 
     # tf.keras.models.save_model(model, "dfm_model")
     print("训练耗时：%.2f min" % ((time_2 - time_1) / 60))
-
 
 
 if __name__ == '__main__':

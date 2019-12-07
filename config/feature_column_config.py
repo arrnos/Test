@@ -33,7 +33,7 @@ def min_max_norm_func(f):
 
 def log_min_max_func(f):
     min_value, max_value = LOG_MIN_MAX_DICT[f]
-    return lambda x: 1.0 * (np.log1p(x) - min_value) / (max_value - min_value)
+    return lambda x: 1.0 * (tf.math.log1p(tf.cast(x, tf.float32)) - min_value) / (max_value - min_value)
 
 
 dense_process_dict = dict(
@@ -54,7 +54,8 @@ dense_features_emb = [fc.embedding_column(fc.bucketized_column(feature, dense_bo
 
 # sparse feature
 sparse_features = \
-    [fc.categorical_column_with_vocabulary_list(f_name, read_feature_values(f_name)) for f_name in CATEGORY_FEATURE_USE_LIST]
+    [fc.categorical_column_with_vocabulary_list(f_name, read_feature_values(f_name)) for f_name in
+     CATEGORY_FEATURE_USE_LIST]
 
 # sparse feature one_hot
 sparse_features_one_hot = \
@@ -112,7 +113,6 @@ def get_test_tensor():
                "recycle_opp_limit_num": 12, "residenceType": "1", "site_source": "微信朋友圈移动平台",
                "student_cellphone_midnum": "",  # "student_dialogue_fenci":"好",
                "timedelta_from": 2, "today_unfollowed_num": 12, "twice_consult": "", "valid_call_num": 12}
-
 
     example_tensor = {x: tf.constant(y) for x, y in example.items()}
     return example_tensor

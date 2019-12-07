@@ -49,7 +49,22 @@ def dump_min_max_values_2_file(csv_file, out_path):
 
     print(rs_dict)
 
-    print("min max value dump completed!", out_path)
+    print("min max value dict dump completed!", out_path)
+
+
+def fix_min_max_value_dict_from_file(min_max_value_save_path):
+    assert os.path.exists(min_max_value_save_path)
+    save_dict = pickle.load(open(min_max_value_save_path, "rb"))
+    fixed_dict = {}
+    for key, (min_value, max_value, mean_value, sum_value, cnt_value) in save_dict.items():
+        if "opp_distribution_saturation" in key:  # 最大值设置为1
+            fixed_dict[key] = (min_value, 1.0, mean_value, sum_value, cnt_value)
+        else:
+            fixed_dict[key] = (min_value, max_value, mean_value, sum_value, cnt_value)
+    pickle.dump(fixed_dict, open(min_max_value_save_path, "wb"))
+
+    print(fixed_dict)
+    print("min max value dict fix completed!", min_max_value_save_path)
 
 
 def load_min_max_value_dict_from_file(min_max_value_save_path):
@@ -70,3 +85,6 @@ def prepare_log_min_max_dict(min_max_dict):
 
 if __name__ == '__main__':
     dump_min_max_values_2_file(train_csv_file, min_max_value_path)
+    fix_min_max_value_dict_from_file(min_max_value_path)
+
+    print(load_min_max_value_dict_from_file(min_max_value_path))

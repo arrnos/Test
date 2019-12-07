@@ -16,14 +16,20 @@ from collections import defaultdict
 ignore_feature = ["student_dialogue_fenci"]
 cate_list = [x for x in CATEGORY_FEATURE_ALL_LIST if x not in ignore_feature]
 
+value_limit_dict = {"create_user": 2,
+                    "first_proj_id": 20,
+                    "graduateSchool": 20,
+                    "major": 20,
+                    "quantum_id": 100,
+                    "site_source": 100}
+
 
 def dump_category_values_2_file(csv_file, out_path):
     os.makedirs(out_path, exist_ok=True)
 
     feature_value_count_dict = {}
     for f in cate_list:
-        if f not in ignore_feature:
-            feature_value_count_dict[f] = defaultdict(int)
+        feature_value_count_dict[f] = defaultdict(int)
 
     with open(csv_file, "r", "utf-8") as fin:
         for i, line in enumerate(fin):
@@ -51,10 +57,25 @@ def read_feature_values_from_file(feature_name, feature_values_save_path=categor
     return list(value_count_dict.keys())
 
 
+def read_feature_values_from_file_limit(feature_name, feature_values_save_path=category_value_path):
+    file_path = os.path.join(feature_values_save_path, feature_name)
+    assert os.path.exists(file_path)
+    value_count_dict = load_dict(file_path, splitor="\t", key_first=True)
+    sort_ls = sorted(value_count_dict.items(), key=lambda x: int(x[1]), reverse=True)
+    sort_value_ls = [x[0] for x in sort_ls]
+    if feature_name in value_limit_dict:
+        return sort_value_ls[:value_limit_dict[feature_name]]
+    else:
+        return sort_value_ls
+
+
 if __name__ == '__main__':
     from config.file_path_config import *
 
     dump_category_values_2_file(train_csv_file, category_value_path)
 
     create_user_set = read_feature_values_from_file("create_user", category_value_path)
+    print(create_user_set)
+
+    create_user_set = read_feature_values_from_file_limit("quantum_id", category_value_path)
     print(create_user_set)
