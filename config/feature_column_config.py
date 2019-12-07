@@ -44,7 +44,7 @@ dense_process_dict = dict(
 
 # dense feature
 dense_features = [fc.numeric_column(feature, normalizer_fn=dense_process_dict[feature]) for feature in
-                  CONTINUOUS_FEATURES]
+                  CONTINUOUS_FEATURE_USE_LIST]
 
 # dense embedding
 dense_features_emb = [fc.embedding_column(fc.bucketized_column(feature, dense_bound_list),
@@ -54,7 +54,7 @@ dense_features_emb = [fc.embedding_column(fc.bucketized_column(feature, dense_bo
 
 # sparse feature
 sparse_features = \
-    [fc.categorical_column_with_vocabulary_list(f_name, read_feature_values(f_name)) for f_name in CATEGORY_FEATURES]
+    [fc.categorical_column_with_vocabulary_list(f_name, read_feature_values(f_name)) for f_name in CATEGORY_FEATURE_USE_LIST]
 
 # sparse feature one_hot
 sparse_features_one_hot = \

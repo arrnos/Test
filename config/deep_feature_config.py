@@ -80,11 +80,13 @@ FEATURE_INFOS = [
 def parse_feature_config():
     feature_name_list = []
     feature_dtype_dict = {}
+    category_feature_all_list = []
+    continuous_feature_all_list = []
     feature_default_dict = {}
     feature_use_list = []
     feature_name_use_list = []
-    category_feature_list = []
-    continuous_feature_list = []
+    category_feature_use_list = []
+    continuous_feature_use_list = []
     min_max_norm_method_ls = []
     log_min_max_norm_method_ls = []
 
@@ -96,6 +98,12 @@ def parse_feature_config():
 
         assert dtype in [tf.string, tf.int64, tf.float32]
 
+        if f_name != "label":
+            if dtype == tf.string:
+                category_feature_all_list.append(f_name)
+            else:
+                continuous_feature_all_list.append(f_name)
+
         if use == 1:
             feature_use_list.append(i)
             feature_name_use_list.append(f_name)
@@ -106,9 +114,9 @@ def parse_feature_config():
                 feature_keras_input_dict[f_name] = tf.keras.Input(name=f_name, shape=(1,), dtype=dtype)
 
                 if dtype == tf.string:
-                    category_feature_list.append(f_name)
+                    category_feature_use_list.append(f_name)
                 else:
-                    continuous_feature_list.append(f_name)
+                    continuous_feature_use_list.append(f_name)
 
                 # 连续值处理方式分组
                 if norm_method == "min_max":
@@ -116,25 +124,26 @@ def parse_feature_config():
                 if norm_method == "log_min_max":
                     log_min_max_norm_method_ls.append(f_name)
 
-    return feature_name_list, feature_dtype_dict, feature_default_dict, feature_use_list, feature_name_use_list, \
-           category_feature_list, continuous_feature_list, feature_keras_input_dict, min_max_norm_method_ls, log_min_max_norm_method_ls
+    return feature_name_list, feature_dtype_dict, category_feature_all_list, continuous_feature_all_list, feature_default_dict, feature_use_list, feature_name_use_list, \
+           category_feature_use_list, continuous_feature_use_list, feature_keras_input_dict, min_max_norm_method_ls, log_min_max_norm_method_ls
 
 
 FEATURE_NAMES, FEATURE_DTYPE_DICT, \
+CATEGORY_FEATURE_ALL_LIST, CONTINUOUS_FEATURE_ALL_LIST, \
 FEATURE_DEFAULT_DICT, FEATURE_USE_LIST, FEATURE_NAME_USE_LIST, \
-CATEGORY_FEATURES, CONTINUOUS_FEATURES, \
+CATEGORY_FEATURE_USE_LIST, CONTINUOUS_FEATURE_USE_LIST, \
 FEATURE_KERAS_INPUT_DICT, \
 MIN_MAX_METHOD_LIST, LOG_MIN_MAX_METHOD_LIST = parse_feature_config()
 
 # 参数初步校验
 assert len(FEATURE_NAMES) == len(FEATURE_DTYPE_DICT)
 assert len(FEATURE_USE_LIST) == len(FEATURE_DEFAULT_DICT) == len(FEATURE_NAME_USE_LIST)
-assert len(CATEGORY_FEATURES) + len(CONTINUOUS_FEATURES) == len(FEATURE_KERAS_INPUT_DICT)
+assert len(CATEGORY_FEATURE_USE_LIST) + len(CONTINUOUS_FEATURE_USE_LIST) == len(FEATURE_KERAS_INPUT_DICT)
 assert len(FEATURE_NAME_USE_LIST) == len(FEATURE_KERAS_INPUT_DICT) + 1
 
 if __name__ == '__main__':
-    print(CATEGORY_FEATURES)
-    print(CONTINUOUS_FEATURES)
+    print(CATEGORY_FEATURE_USE_LIST)
+    print(CONTINUOUS_FEATURE_USE_LIST)
     print(FEATURE_NAMES)
     print(MIN_MAX_METHOD_LIST)
     print(LOG_MIN_MAX_METHOD_LIST)

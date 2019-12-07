@@ -21,8 +21,8 @@ pd.set_option('display.unicode.east_asian_width', True)
 np.set_printoptions(threshold=np.inf)
 sns.set(style="whitegrid")
 
-cate_features = CATEGORY_FEATURES
-cont_features = CONTINUOUS_FEATURES
+cate_features = CATEGORY_FEATURE_USE_LIST
+cont_features = CONTINUOUS_FEATURE_USE_LIST
 csv_features = FEATURE_NAMES
 
 csv_file = test_csv_file

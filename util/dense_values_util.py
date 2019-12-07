@@ -19,14 +19,14 @@ from config.file_path_config import *
 def dump_min_max_values_2_file(csv_file, out_path):
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     rs_dict = {}
-    for f in CONTINUOUS_FEATURES:
+    for f in CONTINUOUS_FEATURE_ALL_LIST:
         rs_dict[f] = [np.inf, -np.inf, 0, 0, 0]
 
     with open(csv_file, "r", "utf-8") as fin:
         for i, line in enumerate(fin):
             arr = line.strip().split(",")
             features = dict(zip(FEATURE_NAMES, arr))
-            for f in CONTINUOUS_FEATURES:
+            for f in CONTINUOUS_FEATURE_ALL_LIST:
                 # 每种特征，统计其每种特征值的出现的最小值和最大值
                 f_value = features[f]
                 if not f_value:

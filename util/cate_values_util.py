@@ -8,25 +8,28 @@
 """
 
 from config.deep_feature_config import *
-from config.file_path_config import category_value_path
-import os
+from config.file_path_config import *
 from util.load_dict import load_dict
 from codecs import open
 from collections import defaultdict
+
+ignore_feature = ["student_dialogue_fenci"]
+cate_list = [x for x in CATEGORY_FEATURE_ALL_LIST if x not in ignore_feature]
 
 
 def dump_category_values_2_file(csv_file, out_path):
     os.makedirs(out_path, exist_ok=True)
 
     feature_value_count_dict = {}
-    for f in CATEGORY_FEATURES:
-        feature_value_count_dict[f] = defaultdict(int)
+    for f in cate_list:
+        if f not in ignore_feature:
+            feature_value_count_dict[f] = defaultdict(int)
 
     with open(csv_file, "r", "utf-8") as fin:
         for i, line in enumerate(fin):
             arr = line.strip().split(",")
             features = dict(zip(FEATURE_NAMES, arr))
-            for f in CATEGORY_FEATURES:
+            for f in cate_list:
                 # 每种特征，统计其每种特征值的出现次数
                 feature_value_count_dict[f][features[f]] += 1
             if i > 0 and i % 5000 == 0:
