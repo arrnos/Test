@@ -26,7 +26,7 @@ BUCKTE_EMBEDDING_SIZE = 8
 EMBED_L2_REG = 1
 
 # 离散值values是否需要进行数量限制
-SPARSE_VALUES_LIMIT = 0
+SPARSE_VALUES_LIMIT = 1
 read_feature_values = read_feature_values_from_file_limit if SPARSE_VALUES_LIMIT else read_feature_values_from_file
 
 # 连续变量的归一化后的分桶边界

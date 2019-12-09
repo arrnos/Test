@@ -140,8 +140,8 @@ if __name__ == '__main__':
     parser.add_argument("-embedding_size", type=int, default=SPARSE_EMBEDDING_SIZE)
     parser.add_argument("-learning_rate", type=float, default=0.001)
     parser.add_argument("-dnn_layers", type=str, default="128,64")
-    parser.add_argument("-dnn_l2", type=float, default=0.01)
-    parser.add_argument("-liner_l2", type=float, default=0.01)
+    parser.add_argument("-dnn_l2", type=float, default=0.0005)
+    parser.add_argument("-liner_l2", type=float, default=0.0005)
 
     parser.add_argument("-train_data_path", type=str, default=train_csv_file)
     parser.add_argument("-valid_data_path", type=str, default=test_csv_file)
