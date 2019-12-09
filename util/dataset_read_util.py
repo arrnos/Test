@@ -20,8 +20,9 @@ def read_csv_2_dataset(csv_file, mean_dict_save_path, shuffle_size=None, batch_s
     data = tf.data.TextLineDataset(csv_file)
     if shuffle_size:
         data = data.shuffle(shuffle_size)
-    data = data.map(lambda x: _parse_line(x, csv_feature_defaults)).batch(batch_size)
+    data = data.map(lambda x: _parse_line(x, csv_feature_defaults), num_parallel_calls=8).batch(batch_size)
     return data
+
 
 # 单行解析
 def _parse_line(line, csv_feature_defaults):
@@ -30,6 +31,7 @@ def _parse_line(line, csv_feature_defaults):
     features = dict(zip(FEATURE_NAME_USE_LIST, fields))
     label = features.pop("label")
     return features, label
+
 
 # 加载连续特征均值字典，用于填补缺失值
 def load_mean_dict(save_path):

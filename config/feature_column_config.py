@@ -10,17 +10,23 @@
 from itertools import chain
 
 from tensorflow import feature_column as fc
-
+from tensorflow.python.keras.initializers import RandomNormal
 from util.cate_values_util import read_feature_values_from_file
 from util.cate_values_util import read_feature_values_from_file_limit
 
 from util.dense_values_util import *
 
+embed_init_std = 0.001
+embed_l2_reg = 0.001
+
 SPARSE_EMBEDDING_SIZE = 8
 BUCKTE_EMBEDDING_SIZE = 8
 
+# embedding是否需要加入正则
+EMBED_L2_REG = 1
+
 # 离散值values是否需要进行数量限制
-SPARSE_VALUES_LIMIT = 1
+SPARSE_VALUES_LIMIT = 0
 read_feature_values = read_feature_values_from_file_limit if SPARSE_VALUES_LIMIT else read_feature_values_from_file
 
 # 连续变量的归一化后的分桶边界
@@ -73,8 +79,17 @@ dense_features = {f_name: fc.numeric_column(f_name, normalizer_fn=dense_process_
 dense_features_bucket = {f_name: fc.bucketized_column(column, dense_bound_list) for f_name, column in
                          dense_features.items()}
 # dense embedding
-dense_features_emb = {f_name: fc.embedding_column(column, BUCKTE_EMBEDDING_SIZE) for f_name, column in
-                      dense_features_bucket.items()}
+if not EMBED_L2_REG:
+    dense_features_emb = {f_name: fc.embedding_column(column, BUCKTE_EMBEDDING_SIZE) for f_name, column in
+                          dense_features_bucket.items()}
+else:
+    dense_features_emb = {f_name: fc.embedding_column(column,
+                                                      BUCKTE_EMBEDDING_SIZE,
+                                                      initializer=RandomNormal(mean=0.0, stddev=embed_init_std,
+                                                                               seed=1024),
+                                                      max_norm=embed_l2_reg
+                                                      ) for f_name, column in
+                          dense_features_bucket.items()}
 
 # ===========================离散特征===============================
 
@@ -88,8 +103,16 @@ sparse_features_one_hot = \
     {f_name: fc.indicator_column(column) for f_name, column in sparse_features.items()}
 
 # sparse feature embedding
-sparse_features_emb = \
-    {f_name: fc.embedding_column(column, SPARSE_EMBEDDING_SIZE) for f_name, column in sparse_features.items()}
+if not EMBED_L2_REG:
+    sparse_features_emb = \
+        {f_name: fc.embedding_column(column, SPARSE_EMBEDDING_SIZE) for f_name, column in sparse_features.items()}
+else:
+    sparse_features_emb = \
+        {f_name: fc.embedding_column(column,
+                                     SPARSE_EMBEDDING_SIZE,
+                                     initializer=RandomNormal(mean=0.0, stddev=embed_init_std, seed=1024),
+                                     max_norm=embed_l2_reg)
+         for f_name, column in sparse_features.items()}
 
 # ========================= LR feature column =============================
 

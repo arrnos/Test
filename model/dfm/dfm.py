@@ -10,18 +10,21 @@
 
 class DFM(object):
 
-    def __init__(self, keras_input_dict, embedding_size, interaction_columns, liner_columns,
-                 dnn_units=(128, 64), drop_ratio=0.5, use_liner=True, use_fm=True, use_dnn=True):
+    def __init__(self, keras_input_dict, embedding_size, interaction_columns, liner_columns, dnn_l2=0.01, liner_l2=0.01,
+                 dnn_units=(128, 64), drop_ratio=0.5, use_liner=True, use_fm=True, use_dnn=True, seed=1024):
 
         self.keras_input_dict = keras_input_dict
         self.embedding_size = embedding_size
         self.interaction_columns = interaction_columns
         self.liner_columns = liner_columns
+        self.dnn_l2 = dnn_l2
+        self.liner_l2 = liner_l2
         self.dnn_units = dnn_units
         self.drop_ratio = drop_ratio
         self.use_liner = use_liner
         self.use_fm = use_fm
         self.use_dnn = use_dnn
+        self.seed = seed
         self.reshaped_emb = self.get_reshaped_emb()
 
     def get_reshaped_emb(self):
@@ -46,18 +49,24 @@ class DFM(object):
 
     def liner_logit(self):
         input = tf.keras.layers.DenseFeatures(self.liner_columns)(self.keras_input_dict)
-        logit = tf.keras.layers.Dense(1, use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(0.005))(input)
+        logit = tf.keras.layers.Dense(1, use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(self.liner_l2))(
+            input)
 
         return logit
 
     def dnn_logit(self):
         output = tf.keras.layers.Flatten()(self.reshaped_emb)
         for unit in self.dnn_units:
-            output = tf.keras.layers.Dense(unit, kernel_regularizer=tf.keras.regularizers.l2(0.0005))(output)
+            output = tf.keras.layers.Dense(unit, kernel_initializer=tf.keras.initializers.glorot_normal(seed=self.seed),
+                                           kernel_regularizer=tf.keras.regularizers.l2(self.dnn_l2),
+                                           use_bias=True,
+                                           bias_regularizer=tf.keras.regularizers.l2(self.dnn_l2),
+                                           bias_initializer='zeros')(output)
             if self.drop_ratio:
                 output = tf.keras.layers.Dropout(self.drop_ratio)(output)
 
-        logit = tf.keras.layers.Dense(1, kernel_regularizer=tf.keras.regularizers.l2(0.0005), use_bias=False)(output)
+        logit = tf.keras.layers.Dense(1, kernel_regularizer=tf.keras.regularizers.l2(self.dnn_l2), use_bias=False)(
+            output)
 
         return logit
 
@@ -92,7 +101,8 @@ def train_and_test():
     valid_dataset = read_csv_2_dataset(args.valid_data_path, min_max_value_path, batch_size=1024)
     test_dataset = read_csv_2_dataset(args.test_data_path, min_max_value_path, batch_size=1024)
 
-    model = DFM(FEATURE_KERAS_INPUT_DICT, args.embedding_size, InteractionColumns, LinerColumns,
+    model = DFM(FEATURE_KERAS_INPUT_DICT, args.embedding_size, InteractionColumns, LinerColumns, dnn_l2=args.dnn_l2,
+                liner_l2=args.liner_l2,
                 dnn_units=eval(args.dnn_layers), drop_ratio=args.drop_out,
                 use_liner=True, use_fm=True, use_dnn=True)
     model = model.build()
@@ -104,12 +114,9 @@ def train_and_test():
     early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_auc', patience=4, mode="max")
     reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=1, min_lr=0)
 
-    time_1 = time.time()
     history = model.fit(train_dataset, epochs=args.epochs, callbacks=[early_stop, reduce_lr],
                         validation_data=valid_dataset,
                         class_weight={0: 1., 1: 50.})
-    time_2 = time.time()
-
     print("【history】")
     print(history.history)
 
@@ -117,7 +124,6 @@ def train_and_test():
     # print(model.evaluate(test_dataset))
 
     # tf.keras.models.save_model(model, "dfm_model")
-    print("训练耗时：%.2f min" % ((time_2 - time_1) / 60))
 
 
 if __name__ == '__main__':
@@ -134,13 +140,31 @@ if __name__ == '__main__':
     parser.add_argument("-embedding_size", type=int, default=SPARSE_EMBEDDING_SIZE)
     parser.add_argument("-learning_rate", type=float, default=0.001)
     parser.add_argument("-dnn_layers", type=str, default="128,64")
+    parser.add_argument("-dnn_l2", type=float, default=0.01)
+    parser.add_argument("-liner_l2", type=float, default=0.01)
 
     parser.add_argument("-train_data_path", type=str, default=train_csv_file)
     parser.add_argument("-valid_data_path", type=str, default=test_csv_file)
     parser.add_argument("-test_data_path", type=str, default=test_csv_file)
 
+    parser.add_argument("-gpu_idx", type=str, default="0")
+
     args = parser.parse_args()
     print("\nArgument:", args, "\n")
+
+    # 设置gup使用
+    os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_idx
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+        try:
+            tf.config.experimental.set_virtual_device_configuration(
+                gpus[0],
+                [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=5120)])
+            logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+            print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+        except RuntimeError as e:
+            # Virtual devices must be set before GPUs have been initialized
+            print(e)
 
     assert SPARSE_EMBEDDING_SIZE == BUCKTE_EMBEDDING_SIZE
     time1 = time.time()
