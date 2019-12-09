@@ -133,7 +133,7 @@ InteractionColumns = list(chain(*InteractionColumns))
 
 # ========================= DNN feature column =============================
 
-DNNColumns = InteractionColumns
+DNNColumns = InteractionColumns + list(dense_features.values())
 
 
 # ==========================   Test module =================================
