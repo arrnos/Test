@@ -18,7 +18,8 @@ xgb_config = {
             'eta': 0.3,
             'silent': 1,
             'objective': 'binary:logistic',
-            'tree_method': 'exact'
+            'tree_method': 'exact',
+            'scale_pos_weight':100,
         },
 
     "train_libsvm_file": train_libsvm_file,

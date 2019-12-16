@@ -16,14 +16,13 @@ from util.cate_values_util import read_feature_values_from_file_limit
 
 from util.dense_values_util import *
 
-embed_init_std = 0.001
-embed_l2_reg = 0.001
-
 SPARSE_EMBEDDING_SIZE = 8
 BUCKTE_EMBEDDING_SIZE = 8
 
 # embedding是否需要加入正则
 EMBED_L2_REG = 1
+embed_init_std = 0.001
+embed_l2_reg = 0.0005
 
 # 离散值values是否需要进行数量限制
 SPARSE_VALUES_LIMIT = 1
@@ -88,8 +87,7 @@ else:
                                                       initializer=RandomNormal(mean=0.0, stddev=embed_init_std,
                                                                                seed=1024),
                                                       max_norm=embed_l2_reg
-                                                      ) for f_name, column in
-                          dense_features_bucket.items()}
+                                                      ) for f_name, column in dense_features_bucket.items()}
 
 # ===========================离散特征===============================
 

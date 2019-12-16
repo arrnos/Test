@@ -15,9 +15,10 @@ import json
 import datetime
 
 
-def train(train_libsvm_file, dump_file, model_file):
+def train(train_libsvm_file,test_libsvm_file, dump_file, model_file):
     dtrain = xgb.DMatrix(train_libsvm_file)
-    watch_ls = [(dtrain, 'eval_train')]
+    dtest = xgb.DMatrix(test_libsvm_file)
+    watch_ls = [(dtrain, 'eval_train'),(dtest,"eval_test")]
     bst = xgb.train(config["param"], dtrain, config["num_round"], watch_ls)
     bst.dump_model(dump_file)
     bst.save_model(model_file)
@@ -77,7 +78,7 @@ def main():
     feature_importance_file = config["feature_importance_file"]
     exp_result_file = config["exp_result_file"] + "_%s" % datetime.datetime.now().strftime("%Y%m%d_%H_%M")
 
-    train(train_libsvm_file, dump_file, model_file)
+    train(train_libsvm_file,test_libsvm_file, dump_file, model_file)
     test(test_libsvm_file, model_file, exp_result_file)
 
     print_nice_model(dump_file, feature_map_file, dump_nice_file)

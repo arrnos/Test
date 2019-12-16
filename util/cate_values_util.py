@@ -20,8 +20,8 @@ value_limit_dict = {"create_user": 2,
                     "first_proj_id": 20,
                     "graduateSchool": 20,
                     "major": 20,
-                    "quantum_id": 100,
-                    "site_source": 100}
+                    "quantum_id": 200,
+                    "site_source": 200}
 
 
 def dump_category_values_2_file(csv_file, out_path):

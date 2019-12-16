@@ -10,15 +10,16 @@
 
 class DFM(object):
 
-    def __init__(self, keras_input_dict, embedding_size, interaction_columns, liner_columns, dnn_l2=0.01, liner_l2=0.01,
+    def __init__(self, keras_input_dict, embedding_size, interaction_columns, liner_columns, dnn_reg=0.01,
+                 liner_reg=0.01,
                  dnn_units=(128, 64), drop_ratio=0.5, use_liner=True, use_fm=True, use_dnn=True, seed=1024):
 
         self.keras_input_dict = keras_input_dict
         self.embedding_size = embedding_size
         self.interaction_columns = interaction_columns
         self.liner_columns = liner_columns
-        self.dnn_l2 = dnn_l2
-        self.liner_l2 = liner_l2
+        self.dnn_reg = dnn_reg
+        self.liner_reg = liner_reg
         self.dnn_units = dnn_units
         self.drop_ratio = drop_ratio
         self.use_liner = use_liner
@@ -49,8 +50,8 @@ class DFM(object):
 
     def liner_logit(self):
         input = tf.keras.layers.DenseFeatures(self.liner_columns)(self.keras_input_dict)
-        logit = tf.keras.layers.Dense(1, use_bias=False, kernel_regularizer=tf.keras.regularizers.l2(self.liner_l2))(
-            input)
+        logit = tf.keras.layers.Dense(1, kernel_regularizer=tf.keras.regularizers.l2(self.liner_reg),
+                                      use_bias=False, )(input)
 
         return logit
 
@@ -58,15 +59,15 @@ class DFM(object):
         output = tf.keras.layers.Flatten()(self.reshaped_emb)
         for unit in self.dnn_units:
             output = tf.keras.layers.Dense(unit, kernel_initializer=tf.keras.initializers.glorot_normal(seed=self.seed),
-                                           kernel_regularizer=tf.keras.regularizers.l2(self.dnn_l2),
+                                           kernel_regularizer=tf.keras.regularizers.l2(self.dnn_reg),
                                            use_bias=True,
-                                           bias_regularizer=tf.keras.regularizers.l2(self.dnn_l2),
+                                           bias_regularizer=tf.keras.regularizers.l2(self.dnn_reg),
                                            bias_initializer='zeros')(output)
             if self.drop_ratio:
                 output = tf.keras.layers.Dropout(self.drop_ratio)(output)
 
-        logit = tf.keras.layers.Dense(1, kernel_regularizer=tf.keras.regularizers.l2(self.dnn_l2), use_bias=False)(
-            output)
+        logit = tf.keras.layers.Dense(1, kernel_regularizer=tf.keras.regularizers.l2(self.dnn_reg),
+                                      use_bias=False)(output)
 
         return logit
 
@@ -101,8 +102,8 @@ def train_and_test():
     valid_dataset = read_csv_2_dataset(args.valid_data_path, min_max_value_path, batch_size=1024)
     test_dataset = read_csv_2_dataset(args.test_data_path, min_max_value_path, batch_size=1024)
 
-    model = DFM(FEATURE_KERAS_INPUT_DICT, args.embedding_size, InteractionColumns, LinerColumns, dnn_l2=args.dnn_l2,
-                liner_l2=args.liner_l2,
+    model = DFM(FEATURE_KERAS_INPUT_DICT, args.embedding_size, InteractionColumns, LinerColumns, dnn_reg=args.dnn_reg,
+                liner_reg=args.liner_reg,
                 dnn_units=eval(args.dnn_layers), drop_ratio=args.drop_out,
                 use_liner=True, use_fm=True, use_dnn=True)
     model = model.build()
@@ -140,8 +141,8 @@ if __name__ == '__main__':
     parser.add_argument("-embedding_size", type=int, default=SPARSE_EMBEDDING_SIZE)
     parser.add_argument("-learning_rate", type=float, default=0.001)
     parser.add_argument("-dnn_layers", type=str, default="128,64")
-    parser.add_argument("-dnn_l2", type=float, default=0.0005)
-    parser.add_argument("-liner_l2", type=float, default=0.0005)
+    parser.add_argument("-dnn_reg", type=float, default=0.005)
+    parser.add_argument("-liner_reg", type=float, default=0.005)
 
     parser.add_argument("-train_data_path", type=str, default=train_csv_file)
     parser.add_argument("-valid_data_path", type=str, default=test_csv_file)
