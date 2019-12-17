@@ -105,7 +105,7 @@ def train_and_test():
     model = DFM(FEATURE_KERAS_INPUT_DICT, args.embedding_size, InteractionColumns, LinerColumns, dnn_reg=args.dnn_reg,
                 liner_reg=args.liner_reg,
                 dnn_units=eval(args.dnn_layers), drop_ratio=args.drop_out,
-                use_liner=True, use_fm=True, use_dnn=True)
+                use_liner=args.use_liner, use_fm=args.use_fm, use_dnn=args.use_dnn)
     model = model.build()
     model.summary()
 
@@ -135,8 +135,8 @@ if __name__ == '__main__':
     import time
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-batch_size", type=int, default=256)
-    parser.add_argument("-epochs", type=int, default=1)
+    parser.add_argument("-batch_size", type=int, default=512)
+    parser.add_argument("-epochs", type=int, default=4)
     parser.add_argument("-drop_out", type=float, default=0.5)
     parser.add_argument("-embedding_size", type=int, default=SPARSE_EMBEDDING_SIZE)
     parser.add_argument("-learning_rate", type=float, default=0.001)
@@ -149,6 +149,10 @@ if __name__ == '__main__':
     parser.add_argument("-test_data_path", type=str, default=test_csv_file)
 
     parser.add_argument("-gpu_idx", type=str, default="0")
+
+    parser.add_argument("-use_fm", type=bool, default=True)
+    parser.add_argument("-use_liner", type=bool, default=True)
+    parser.add_argument("-use_dnn", type=bool, default=True)
 
     args = parser.parse_args()
     print("\nArgument:", args, "\n")

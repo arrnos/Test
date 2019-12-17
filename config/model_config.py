@@ -19,15 +19,17 @@ xgb_config = {
             'silent': 1,
             'objective': 'binary:logistic',
             'tree_method': 'exact',
-            'scale_pos_weight':100,
+            'scale_pos_weight':1,
         },
 
     "train_libsvm_file": train_libsvm_file,
     "test_libsvm_file": test_libsvm_file,
-    "model_file": xgb_path + "model_file",
-    "dump_file": xgb_path + "dump_file",
-    "dump_nice_file": xgb_path + "dump_nice_file",
-    "feature_map_file": xgb_path + "train_feature_map",
-    "feature_importance_file": xgb_path + "feature_importance_file",
-    "exp_result_file": xgb_path + "exp_result_file"
+    "train_csv_file": train_csv_file,
+    "test_csv_file": test_csv_file,
+    "model_file": xgb_path + "/model_file",
+    "dump_file": xgb_path + "/dump_file",
+    "dump_nice_file": xgb_path + "/dump_nice_file",
+    "feature_map_file": xgb_path + "/train_feature_map",
+    "feature_importance_file": xgb_path + "/feature_importance_file",
+    "exp_result_file": xgb_path + "/exp_result_file"
 }
